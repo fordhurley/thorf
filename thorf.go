@@ -2,7 +2,7 @@ package thorf
 
 import (
 	"fmt"
-	"strings"
+	"io"
 )
 
 // Machine is a Forth interpreter with state.
@@ -28,9 +28,9 @@ func NewMachine() *Machine {
 	}
 }
 
-// Eval a single line of input.
-func (m *Machine) Eval(input string) error {
-	lexer := NewLexer(strings.NewReader(input))
+// Eval evaluates instructions read from r.
+func (m *Machine) Eval(r io.Reader) error {
+	lexer := NewLexer(r)
 
 	for lexer.Scan() {
 		token := lexer.Token()

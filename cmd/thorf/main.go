@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"io"
 	"os"
@@ -24,18 +23,7 @@ func main() {
 	}
 
 	m := thorf.NewMachine()
-
-	scanner := bufio.NewScanner(input)
-	for scanner.Scan() {
-		line := scanner.Text()
-		err := m.Eval(line)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
-	}
-
-	err := scanner.Err()
+	err := m.Eval(input)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

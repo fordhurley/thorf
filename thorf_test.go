@@ -2,6 +2,7 @@ package thorf
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -12,7 +13,7 @@ func runTest(input []string) ([]int, error) {
 	m := NewMachine()
 
 	for _, line := range input {
-		err := m.Eval(line)
+		err := m.Eval(strings.NewReader(line))
 		if err != nil {
 			return nil, err
 		}
