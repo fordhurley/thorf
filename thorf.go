@@ -6,11 +6,13 @@ import (
 	"strings"
 )
 
+// Machine is a Forth interpreter with state.
 type Machine struct {
 	stack *Stack
 	dict  map[string]Operation
 }
 
+// NewMachine returns a Machine with an empty stack and the default dictionary.
 func NewMachine() *Machine {
 	return &Machine{
 		stack: &Stack{},
@@ -56,22 +58,9 @@ func (m *Machine) Eval(input string) error {
 	return eval(m.stack, m.dict, words)
 }
 
+// Stack returns the current state of the Machine stack.
 func (m *Machine) Stack() []int {
 	return *m.stack
-}
-
-// Eval evaluates the input statements and returns the end state of the stack.
-func Eval(input []string) ([]int, error) {
-	m := NewMachine()
-
-	for _, line := range input {
-		err := m.Eval(line)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return m.Stack(), nil
 }
 
 func defineOperation(dict map[string]Operation, words []string) Operation {

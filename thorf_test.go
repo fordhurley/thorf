@@ -8,35 +8,48 @@ import (
 // These tests were borrowed from the excellent exercism.io "forth" exercise:
 // https://github.com/exercism/go/tree/5446524b6/exercises/forth
 
-func TestEval(t *testing.T) {
+func runTest(input []string) ([]int, error) {
+	m := NewMachine()
+
+	for _, line := range input {
+		err := m.Eval(line)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return m.Stack(), nil
+}
+
+func TestMachine(t *testing.T) {
 	for _, tg := range testGroups {
 		for _, tc := range tg.tests {
 			t.Run(tg.group+"--"+tc.description, func(t *testing.T) {
-				v, err := Eval(tc.input)
+				v, err := runTest(tc.input)
 				if err != nil {
 					if tc.expected != nil {
-						t.Fatalf("Eval(%#v) expected %v, got an error: %q", tc.input, tc.expected, err)
+						t.Fatalf("runTest(%#v) expected %v, got an error: %q", tc.input, tc.expected, err)
 					}
 					return
 				}
 
 				if tc.expected == nil {
-					t.Fatalf("Eval(%#v) expected an error, got %v", tc.input, v)
+					t.Fatalf("runTest(%#v) expected an error, got %v", tc.input, v)
 				}
 
 				if !reflect.DeepEqual(v, tc.expected) {
-					t.Fatalf("Eval(%#v) expected %v, got %v", tc.input, tc.expected, v)
+					t.Fatalf("runTest(%#v) expected %v, got %v", tc.input, tc.expected, v)
 				}
 			})
 		}
 	}
 }
 
-func BenchmarkEval(b *testing.B) {
+func BenchmarkMachine(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for _, tg := range testGroups {
 			for _, tc := range tg.tests {
-				Eval(tc.input)
+				runTest(tc.input)
 			}
 		}
 	}
