@@ -2,7 +2,6 @@ package thorf
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 )
 
@@ -31,31 +30,49 @@ func NewMachine() *Machine {
 
 // Eval a single line of input.
 func (m *Machine) Eval(input string) error {
-	words := strings.Fields(input)
+	lexer := NewLexer(strings.NewReader(input))
 
-	if words[0] == ":" {
-		// Add a user defined word:
-		word := words[1]
+	for lexer.Scan() {
+		token := lexer.Token()
 
-		_, err := strconv.Atoi(word)
-		if err == nil {
-			return fmt.Errorf("cannot redefine numbers")
-		}
+		if token.Type == Def {
+			// Add a user defined word.
 
-		var definition []string
-		for _, w := range words[2:] {
-			if w == ";" {
-				break
+			if !lexer.Scan() {
+				err := lexer.Err()
+				if err != nil {
+					return err
+				}
+				return fmt.Errorf("invalid word definition")
 			}
-			definition = append(definition, w)
+
+			t := lexer.Token()
+			if t.Type != Word {
+				return fmt.Errorf("invalid word definition")
+			}
+			name := t.word
+
+			var definition []Token
+			for lexer.Scan() {
+				t = lexer.Token()
+				if t.Type == End {
+					break
+				}
+				definition = append(definition, t)
+			}
+
+			m.dict[name] = defineOperation(m.dict, definition)
+
+			continue
 		}
 
-		m.dict[strings.ToLower(word)] = defineOperation(m.dict, definition)
-
-		return nil
+		err := eval(m.stack, m.dict, token)
+		if err != nil {
+			return err
+		}
 	}
 
-	return eval(m.stack, m.dict, words)
+	return lexer.Err()
 }
 
 // Stack returns the current state of the Machine stack.
@@ -63,7 +80,7 @@ func (m *Machine) Stack() []int {
 	return *m.stack
 }
 
-func defineOperation(dict map[string]Operation, words []string) Operation {
+func defineOperation(dict map[string]Operation, definition []Token) Operation {
 	// A user defined word should operate on a snapshot of the dictionary
 	// at the time it was defined.
 	clone := make(map[string]Operation, len(dict))
@@ -71,26 +88,26 @@ func defineOperation(dict map[string]Operation, words []string) Operation {
 		clone[w] = op
 	}
 	return func(s *Stack) error {
-		return eval(s, clone, words)
+		return eval(s, clone, definition...)
 	}
 }
 
-func eval(stack *Stack, dict map[string]Operation, words []string) error {
-	for _, word := range words {
-		n, err := strconv.Atoi(word)
-		if err == nil {
-			stack.Push(n)
-			continue
-		}
-
-		op, ok := dict[strings.ToLower(word)]
-		if !ok {
-			return fmt.Errorf("unknown word: %q", word)
-		}
-
-		err = op(stack)
-		if err != nil {
-			return err
+func eval(stack *Stack, dict map[string]Operation, tokens ...Token) error {
+	for _, token := range tokens {
+		switch token.Type {
+		case Word:
+			op, ok := dict[token.word]
+			if !ok {
+				return fmt.Errorf("unknown word: %q", token.word)
+			}
+			err := op(stack)
+			if err != nil {
+				return err
+			}
+		case Num:
+			stack.Push(token.num)
+		default:
+			panic("unexpected token: " + token.String())
 		}
 	}
 	return nil
