@@ -11,7 +11,7 @@ func add(s *Stack) error {
 	}
 	a := s.Pop()
 	b := s.Pop()
-	s.Push(a + b)
+	s.Push(b + a)
 	return nil
 }
 
@@ -31,7 +31,7 @@ func multiply(s *Stack) error {
 	}
 	a := s.Pop()
 	b := s.Pop()
-	s.Push(a * b)
+	s.Push(b * a)
 	return nil
 }
 
