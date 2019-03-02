@@ -2,9 +2,12 @@ thorf
 =====
 
 Interpreter for a massively simplified version of
-[Forth](https://en.wikipedia.org/wiki/Forth_(programming_language)). I
-originally wrote this as a solution to an [exercism.io](exercism.io) exercise,
-but had so much fun that I wanted to take it a bit further.
+[Forth](https://en.wikipedia.org/wiki/Forth_(programming_language)).
+
+I originally wrote this as
+[a solution](https://exercism.io/tracks/go/exercises/forth/solutions/6e2b9b21f3f047e3873f7460c88cba28)
+to an [exercism.io](exercism.io) exercise, but had so much fun that I decided to
+take it a bit further.
 
 
 Supported "words"
