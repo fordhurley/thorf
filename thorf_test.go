@@ -11,20 +11,23 @@ import (
 func TestEval(t *testing.T) {
 	for _, tg := range testGroups {
 		for _, tc := range tg.tests {
-			if v, err := Eval(tc.input); err == nil {
-				var _ error = err
-				if tc.expected == nil {
-					t.Fatalf("FAIL: %s | %s\n\tEval(%#v) expected an error, got %v",
-						tg.group, tc.description, tc.input, v)
-				} else if !reflect.DeepEqual(v, tc.expected) {
-					t.Fatalf("FAIL: %s | %s\n\tEval(%#v) expected %v, got %v",
-						tg.group, tc.description, tc.input, tc.expected, v)
+			t.Run(tg.group+"--"+tc.description, func(t *testing.T) {
+				v, err := Eval(tc.input)
+				if err != nil {
+					if tc.expected != nil {
+						t.Fatalf("Eval(%#v) expected %v, got an error: %q", tc.input, tc.expected, err)
+					}
+					return
 				}
-			} else if tc.expected != nil {
-				t.Fatalf("FAIL: %s | %s\n\tEval(%#v) expected %v, got an error: %q",
-					tg.group, tc.description, tc.input, tc.expected, err)
-			}
-			t.Logf("PASS: %s | %s", tg.group, tc.description)
+
+				if tc.expected == nil {
+					t.Fatalf("Eval(%#v) expected an error, got %v", tc.input, v)
+				}
+
+				if !reflect.DeepEqual(v, tc.expected) {
+					t.Fatalf("Eval(%#v) expected %v, got %v", tc.input, tc.expected, v)
+				}
+			})
 		}
 	}
 }
