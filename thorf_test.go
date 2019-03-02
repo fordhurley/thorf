@@ -1,8 +1,43 @@
-package forth
+package thorf
 
-// Source: exercism/problem-specifications
-// Commit: 5ba35c7 forth: add mention of 'error' to comment
-// Problem Specifications Version: 1.7.0
+import (
+	"reflect"
+	"testing"
+)
+
+// These tests were borrowed from the excellent exercism.io "forth" exercise:
+// https://github.com/exercism/go/tree/5446524b6/exercises/forth
+
+func TestEval(t *testing.T) {
+	for _, tg := range testGroups {
+		for _, tc := range tg.tests {
+			if v, err := Eval(tc.input); err == nil {
+				var _ error = err
+				if tc.expected == nil {
+					t.Fatalf("FAIL: %s | %s\n\tEval(%#v) expected an error, got %v",
+						tg.group, tc.description, tc.input, v)
+				} else if !reflect.DeepEqual(v, tc.expected) {
+					t.Fatalf("FAIL: %s | %s\n\tEval(%#v) expected %v, got %v",
+						tg.group, tc.description, tc.input, tc.expected, v)
+				}
+			} else if tc.expected != nil {
+				t.Fatalf("FAIL: %s | %s\n\tEval(%#v) expected %v, got an error: %q",
+					tg.group, tc.description, tc.input, tc.expected, err)
+			}
+			t.Logf("PASS: %s | %s", tg.group, tc.description)
+		}
+	}
+}
+
+func BenchmarkEval(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		for _, tg := range testGroups {
+			for _, tc := range tg.tests {
+				Eval(tc.input)
+			}
+		}
+	}
+}
 
 type testGroup struct {
 	group string

@@ -1,4 +1,4 @@
-package forth
+package thorf
 
 import (
 	"fmt"
@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-// Forth evaluates the input statements and returns the end state of the stack.
-func Forth(input []string) ([]int, error) {
+// Eval evaluates the input statements and returns the end state of the stack.
+func Eval(input []string) ([]int, error) {
 	var stack Stack
 	dict := map[string]Operation{
 		"+":    add,
