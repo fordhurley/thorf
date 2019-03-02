@@ -6,52 +6,72 @@ import (
 	"strings"
 )
 
-// Eval evaluates the input statements and returns the end state of the stack.
-func Eval(input []string) ([]int, error) {
-	var stack Stack
-	dict := map[string]Operation{
-		"+":    add,
-		"-":    subtract,
-		"*":    multiply,
-		"/":    divide,
-		"dup":  duplicate,
-		"drop": drop,
-		"swap": swap,
-		"over": over,
+type Machine struct {
+	stack *Stack
+	dict  map[string]Operation
+}
+
+func NewMachine() *Machine {
+	return &Machine{
+		stack: &Stack{},
+		dict: map[string]Operation{
+			"+":    add,
+			"-":    subtract,
+			"*":    multiply,
+			"/":    divide,
+			"dup":  duplicate,
+			"drop": drop,
+			"swap": swap,
+			"over": over,
+		},
 	}
+}
 
-	for _, line := range input {
-		words := strings.Fields(line)
+// Eval a single line of input.
+func (m *Machine) Eval(input string) error {
+	words := strings.Fields(input)
 
-		if words[0] == ":" {
-			// Add a user defined word:
-			word := words[1]
+	if words[0] == ":" {
+		// Add a user defined word:
+		word := words[1]
 
-			_, err := strconv.Atoi(word)
-			if err == nil {
-				return nil, fmt.Errorf("cannot redefine numbers")
-			}
-
-			var definition []string
-			for _, w := range words[2:] {
-				if w == ";" {
-					break
-				}
-				definition = append(definition, w)
-			}
-
-			dict[strings.ToLower(word)] = defineOperation(dict, definition)
-
-			continue
+		_, err := strconv.Atoi(word)
+		if err == nil {
+			return fmt.Errorf("cannot redefine numbers")
 		}
 
-		err := eval(&stack, dict, words)
+		var definition []string
+		for _, w := range words[2:] {
+			if w == ";" {
+				break
+			}
+			definition = append(definition, w)
+		}
+
+		m.dict[strings.ToLower(word)] = defineOperation(m.dict, definition)
+
+		return nil
+	}
+
+	return eval(m.stack, m.dict, words)
+}
+
+func (m *Machine) Stack() []int {
+	return *m.stack
+}
+
+// Eval evaluates the input statements and returns the end state of the stack.
+func Eval(input []string) ([]int, error) {
+	m := NewMachine()
+
+	for _, line := range input {
+		err := m.Eval(line)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	return stack, nil
+	return m.Stack(), nil
 }
 
 func defineOperation(dict map[string]Operation, words []string) Operation {
