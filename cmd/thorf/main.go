@@ -29,5 +29,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println(m.Stack())
+	fmt.Println()
+	fmt.Println("stack:", m.Stack())
 }
