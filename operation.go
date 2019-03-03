@@ -95,7 +95,7 @@ func print(w io.Writer) Operation {
 			return fmt.Errorf("need one value to print")
 		}
 		x := s.Pop()
-		_, err := fmt.Fprint(w, x)
+		_, err := fmt.Fprint(w, x, " ")
 		return err
 	}
 }
