@@ -22,7 +22,7 @@ func main() {
 		input = f
 	}
 
-	m := thorf.NewMachine()
+	m := thorf.NewMachine(os.Stdout)
 	err := m.Eval(input)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)

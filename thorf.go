@@ -12,8 +12,8 @@ type Machine struct {
 }
 
 // NewMachine returns a Machine with an empty stack and the default dictionary.
-func NewMachine() *Machine {
-	m := Machine{
+func NewMachine(w io.Writer) *Machine {
+	return &Machine{
 		stack: &Stack{},
 		dict: map[string]Operation{
 			"+":    add,
@@ -24,10 +24,9 @@ func NewMachine() *Machine {
 			"drop": drop,
 			"swap": swap,
 			"over": over,
+			"emit": emit(w),
 		},
 	}
-	m.dict["emit"] = m.emit
-	return &m
 }
 
 // Eval evaluates instructions read from r.
@@ -80,18 +79,6 @@ func (m *Machine) Eval(r io.Reader) error {
 // Stack returns the current state of the Machine stack.
 func (m *Machine) Stack() []int {
 	return *m.stack
-}
-
-// emit is an Operation, so it needs to take a Stack even though it has access
-// via it's receiver.
-func (m *Machine) emit(_ *Stack) error {
-	if m.stack.Size() < 1 {
-		return fmt.Errorf("need one value to emit")
-	}
-	x := m.stack.Pop()
-	// TODO: make m in charge of output stream
-	_, err := fmt.Print(string(rune(x)))
-	return err
 }
 
 func defineOperation(dict map[string]Operation, definition []Token) Operation {

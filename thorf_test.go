@@ -1,6 +1,7 @@
 package thorf
 
 import (
+	"os"
 	"reflect"
 	"strings"
 	"testing"
@@ -10,7 +11,7 @@ import (
 // https://github.com/exercism/go/tree/5446524b6/exercises/forth
 
 func runTest(input string) ([]int, error) {
-	m := NewMachine()
+	m := NewMachine(os.Stdout) // TODO: buffer so it can be checked
 	err := m.Eval(strings.NewReader(input))
 	return m.Stack(), err
 }

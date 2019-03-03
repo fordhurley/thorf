@@ -1,6 +1,9 @@
 package thorf
 
-import "fmt"
+import (
+	"fmt"
+	"io"
+)
 
 // An Operation modifies the stack or returns an error.
 type Operation func(*Stack) error
@@ -84,4 +87,15 @@ func over(s *Stack) error {
 	s.Push(a)
 	s.Push(b)
 	return nil
+}
+
+func emit(w io.Writer) Operation {
+	return func(s *Stack) error {
+		if s.Size() < 1 {
+			return fmt.Errorf("need one value to emit")
+		}
+		x := s.Pop()
+		_, err := fmt.Fprint(w, string(rune(x)))
+		return err
+	}
 }
