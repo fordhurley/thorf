@@ -9,17 +9,10 @@ import (
 // These tests were borrowed from the excellent exercism.io "forth" exercise:
 // https://github.com/exercism/go/tree/5446524b6/exercises/forth
 
-func runTest(input []string) ([]int, error) {
+func runTest(input string) ([]int, error) {
 	m := NewMachine()
-
-	for _, line := range input {
-		err := m.Eval(strings.NewReader(line))
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return m.Stack(), nil
+	err := m.Eval(strings.NewReader(input))
+	return m.Stack(), err
 }
 
 func TestMachine(t *testing.T) {
@@ -63,7 +56,7 @@ type testGroup struct {
 
 type testCase struct {
 	description string
-	input       []string
+	input       string
 	expected    []int // nil slice indicates error expected.
 }
 
@@ -73,7 +66,7 @@ var testGroups = []testGroup{
 		tests: []testCase{
 			{
 				"numbers just get pushed onto the stack",
-				[]string{"1 2 3 4 5"},
+				"1 2 3 4 5",
 				[]int{1, 2, 3, 4, 5},
 			},
 		},
@@ -83,18 +76,18 @@ var testGroups = []testGroup{
 		tests: []testCase{
 			{
 				"can add two numbers",
-				[]string{"1 2 +"},
+				"1 2 +",
 				[]int{3},
 			},
 			{
 				"errors if there is nothing on the stack",
-				[]string{"+"},
-				[]int(nil),
+				"+",
+				nil,
 			},
 			{
 				"errors if there is only one value on the stack",
-				[]string{"1 +"},
-				[]int(nil),
+				"1 +",
+				nil,
 			},
 		},
 	},
@@ -103,18 +96,18 @@ var testGroups = []testGroup{
 		tests: []testCase{
 			{
 				"can subtract two numbers",
-				[]string{"3 4 -"},
+				"3 4 -",
 				[]int{-1},
 			},
 			{
 				"errors if there is nothing on the stack",
-				[]string{"-"},
-				[]int(nil),
+				"-",
+				nil,
 			},
 			{
 				"errors if there is only one value on the stack",
-				[]string{"1 -"},
-				[]int(nil),
+				"1 -",
+				nil,
 			},
 		},
 	},
@@ -123,18 +116,18 @@ var testGroups = []testGroup{
 		tests: []testCase{
 			{
 				"can multiply two numbers",
-				[]string{"2 4 *"},
+				"2 4 *",
 				[]int{8},
 			},
 			{
 				"errors if there is nothing on the stack",
-				[]string{"*"},
-				[]int(nil),
+				"*",
+				nil,
 			},
 			{
 				"errors if there is only one value on the stack",
-				[]string{"1 *"},
-				[]int(nil),
+				"1 *",
+				nil,
 			},
 		},
 	},
@@ -143,28 +136,28 @@ var testGroups = []testGroup{
 		tests: []testCase{
 			{
 				"can divide two numbers",
-				[]string{"12 3 /"},
+				"12 3 /",
 				[]int{4},
 			},
 			{
 				"performs integer division",
-				[]string{"8 3 /"},
+				"8 3 /",
 				[]int{2},
 			},
 			{
 				"errors if dividing by zero",
-				[]string{"4 0 /"},
-				[]int(nil),
+				"4 0 /",
+				nil,
 			},
 			{
 				"errors if there is nothing on the stack",
-				[]string{"/"},
-				[]int(nil),
+				"/",
+				nil,
 			},
 			{
 				"errors if there is only one value on the stack",
-				[]string{"1 /"},
-				[]int(nil),
+				"1 /",
+				nil,
 			},
 		},
 	},
@@ -173,12 +166,12 @@ var testGroups = []testGroup{
 		tests: []testCase{
 			{
 				"addition and subtraction",
-				[]string{"1 2 + 4 -"},
+				"1 2 + 4 -",
 				[]int{-1},
 			},
 			{
 				"multiplication and division",
-				[]string{"2 4 * 3 /"},
+				"2 4 * 3 /",
 				[]int{2},
 			},
 		},
@@ -188,18 +181,18 @@ var testGroups = []testGroup{
 		tests: []testCase{
 			{
 				"copies a value on the stack",
-				[]string{"1 dup"},
+				"1 dup",
 				[]int{1, 1},
 			},
 			{
 				"copies the top value on the stack",
-				[]string{"1 2 dup"},
+				"1 2 dup",
 				[]int{1, 2, 2},
 			},
 			{
 				"errors if there is nothing on the stack",
-				[]string{"dup"},
-				[]int(nil),
+				"dup",
+				nil,
 			},
 		},
 	},
@@ -208,18 +201,18 @@ var testGroups = []testGroup{
 		tests: []testCase{
 			{
 				"removes the top value on the stack if it is the only one",
-				[]string{"1 drop"},
+				"1 drop",
 				[]int{},
 			},
 			{
 				"removes the top value on the stack if it is not the only one",
-				[]string{"1 2 drop"},
+				"1 2 drop",
 				[]int{1},
 			},
 			{
 				"errors if there is nothing on the stack",
-				[]string{"drop"},
-				[]int(nil),
+				"drop",
+				nil,
 			},
 		},
 	},
@@ -228,23 +221,23 @@ var testGroups = []testGroup{
 		tests: []testCase{
 			{
 				"swaps the top two values on the stack if they are the only ones",
-				[]string{"1 2 swap"},
+				"1 2 swap",
 				[]int{2, 1},
 			},
 			{
 				"swaps the top two values on the stack if they are not the only ones",
-				[]string{"1 2 3 swap"},
+				"1 2 3 swap",
 				[]int{1, 3, 2},
 			},
 			{
 				"errors if there is nothing on the stack",
-				[]string{"swap"},
-				[]int(nil),
+				"swap",
+				nil,
 			},
 			{
 				"errors if there is only one value on the stack",
-				[]string{"1 swap"},
-				[]int(nil),
+				"1 swap",
+				nil,
 			},
 		},
 	},
@@ -253,23 +246,23 @@ var testGroups = []testGroup{
 		tests: []testCase{
 			{
 				"copies the second element if there are only two",
-				[]string{"1 2 over"},
+				"1 2 over",
 				[]int{1, 2, 1},
 			},
 			{
 				"copies the second element if there are more than two",
-				[]string{"1 2 3 over"},
+				"1 2 3 over",
 				[]int{1, 2, 3, 2},
 			},
 			{
 				"errors if there is nothing on the stack",
-				[]string{"over"},
-				[]int(nil),
+				"over",
+				nil,
 			},
 			{
 				"errors if there is only one value on the stack",
-				[]string{"1 over"},
-				[]int(nil),
+				"1 over",
+				nil,
 			},
 		},
 	},
@@ -278,48 +271,48 @@ var testGroups = []testGroup{
 		tests: []testCase{
 			{
 				"can consist of built-in words",
-				[]string{": dup-twice dup dup ;", "1 dup-twice"},
+				": dup-twice dup dup ; 1 dup-twice",
 				[]int{1, 1, 1},
 			},
 			{
 				"execute in the right order",
-				[]string{": countup 1 2 3 ;", "countup"},
+				": countup 1 2 3 ; countup",
 				[]int{1, 2, 3},
 			},
 			{
 				"can override other user-defined words",
-				[]string{": foo dup ;", ": foo dup dup ;", "1 foo"},
+				": foo dup ; : foo dup dup ; 1 foo",
 				[]int{1, 1, 1},
 			},
 			{
 				"can override built-in words",
-				[]string{": swap dup ;", "1 swap"},
+				": swap dup ; 1 swap",
 				[]int{1, 1},
 			},
 			{
 				"can override built-in operators",
-				[]string{": + * ;", "3 4 +"},
+				": + * ; 3 4 +",
 				[]int{12},
 			},
 			{
 				"can use different words with the same name",
-				[]string{": foo 5 ;", ": bar foo ;", ": foo 6 ;", "bar foo"},
+				": foo 5 ; : bar foo ; : foo 6 ; bar foo",
 				[]int{5, 6},
 			},
 			{
 				"can define word that uses word with the same name",
-				[]string{": foo 10 ;", ": foo foo 1 + ;", "foo"},
+				": foo 10 ; : foo foo 1 + ; foo",
 				[]int{11},
 			},
 			{
 				"cannot redefine numbers",
-				[]string{": 1 2 ;"},
-				[]int(nil),
+				": 1 2 ;",
+				nil,
 			},
 			{
 				"errors if executing a non-existent word",
-				[]string{"foo"},
-				[]int(nil),
+				"foo",
+				nil,
 			},
 		},
 	},
@@ -328,32 +321,32 @@ var testGroups = []testGroup{
 		tests: []testCase{
 			{
 				"DUP is case-insensitive",
-				[]string{"1 DUP Dup dup"},
+				"1 DUP Dup dup",
 				[]int{1, 1, 1, 1},
 			},
 			{
 				"DROP is case-insensitive",
-				[]string{"1 2 3 4 DROP Drop drop"},
+				"1 2 3 4 DROP Drop drop",
 				[]int{1},
 			},
 			{
 				"SWAP is case-insensitive",
-				[]string{"1 2 SWAP 3 Swap 4 swap"},
+				"1 2 SWAP 3 Swap 4 swap",
 				[]int{2, 3, 4, 1},
 			},
 			{
 				"OVER is case-insensitive",
-				[]string{"1 2 OVER Over over"},
+				"1 2 OVER Over over",
 				[]int{1, 2, 1, 2, 1},
 			},
 			{
 				"user-defined words are case-insensitive",
-				[]string{": foo dup ;", "1 FOO Foo foo"},
+				": foo dup ; 1 FOO Foo foo",
 				[]int{1, 1, 1, 1},
 			},
 			{
 				"definitions are case-insensitive",
-				[]string{": SWAP DUP Dup dup ;", "1 swap"},
+				": SWAP DUP Dup dup ; 1 swap",
 				[]int{1, 1, 1, 1},
 			},
 		},
