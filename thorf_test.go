@@ -404,4 +404,69 @@ var testGroups = []testGroup{
 			},
 		},
 	},
+	{
+		group: "output",
+		tests: []testCase{
+			{
+				". prints the value as a number",
+				"1 .",
+				"1 ",
+				false,
+			},
+			{
+				". prints only the last value as a number",
+				"1 2 3 .",
+				"3 ",
+				false,
+			},
+			{
+				". consumes the value",
+				"1 2 3 . .s",
+				"3 1 2 ",
+				false,
+			},
+			{
+				".s prints the whole stack",
+				"1 2 3 .s",
+				"1 2 3 ",
+				false,
+			},
+			{
+				".s does not consume the stack",
+				"1 .s .",
+				"1 1 ",
+				false,
+			},
+			{
+				"EMIT prints one ASCII character",
+				"42 EMIT",
+				"*",
+				false,
+			},
+			{
+				"EMIT consumes the value",
+				"42 EMIT .s",
+				"*",
+				false,
+			},
+			{
+				". errors if there is nothing on the stack",
+				".",
+				"",
+				true,
+			},
+			{
+				".s can print an empty stack",
+				".s",
+				"",
+				false,
+			},
+			{
+				"EMIT errors if there is nothing on the stack",
+				"EMIT",
+				"",
+				true,
+			},
+		},
+	},
 }
