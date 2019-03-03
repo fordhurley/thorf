@@ -16,14 +16,18 @@ func NewMachine(w io.Writer) *Machine {
 	return &Machine{
 		stack: &Stack{},
 		dict: map[string]Operation{
-			"+":    add,
-			"-":    subtract,
-			"*":    multiply,
-			"/":    divide,
+			// Arithmetic:
+			"+": add,
+			"-": subtract,
+			"*": multiply,
+			"/": divide,
+			// Stack manipulations:
 			"dup":  duplicate,
 			"drop": drop,
 			"swap": swap,
 			"over": over,
+			// Output:
+			".":    print(w),
 			"emit": emit(w),
 		},
 	}

@@ -89,6 +89,17 @@ func over(s *Stack) error {
 	return nil
 }
 
+func print(w io.Writer) Operation {
+	return func(s *Stack) error {
+		if s.Size() < 1 {
+			return fmt.Errorf("need one value to print")
+		}
+		x := s.Pop()
+		_, err := fmt.Fprint(w, x)
+		return err
+	}
+}
+
 func emit(w io.Writer) Operation {
 	return func(s *Stack) error {
 		if s.Size() < 1 {
