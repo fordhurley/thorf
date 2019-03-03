@@ -13,7 +13,7 @@ import (
 func runTest(input string) ([]int, error) {
 	m := NewMachine(os.Stdout) // TODO: buffer so it can be checked
 	err := m.Eval(strings.NewReader(input))
-	return m.Stack(), err
+	return *m.stack, err
 }
 
 func TestMachine(t *testing.T) {

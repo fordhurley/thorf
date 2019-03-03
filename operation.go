@@ -100,6 +100,19 @@ func print(w io.Writer) Operation {
 	}
 }
 
+// printStack does NOT consume the stack, unlike most of the other operations.
+func printStack(w io.Writer) Operation {
+	return func(s *Stack) error {
+		for _, x := range *s {
+			_, err := fmt.Fprint(w, x, " ")
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+}
+
 func emit(w io.Writer) Operation {
 	return func(s *Stack) error {
 		if s.Size() < 1 {

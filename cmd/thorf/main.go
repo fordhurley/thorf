@@ -30,5 +30,4 @@ func main() {
 	}
 
 	fmt.Println()
-	fmt.Println("stack:", m.Stack())
 }

@@ -28,6 +28,7 @@ func NewMachine(w io.Writer) *Machine {
 			"over": over,
 			// Output:
 			".":    print(w),
+			".s":   printStack(w),
 			"emit": emit(w),
 		},
 	}
@@ -78,11 +79,6 @@ func (m *Machine) Eval(r io.Reader) error {
 	}
 
 	return lexer.Err()
-}
-
-// Stack returns the current state of the Machine stack.
-func (m *Machine) Stack() []int {
-	return *m.stack
 }
 
 func defineOperation(dict map[string]Operation, definition []Token) Operation {
