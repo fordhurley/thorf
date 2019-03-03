@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/fordhurley/thorf"
 )
@@ -20,6 +21,9 @@ func main() {
 			os.Exit(1)
 		}
 		input = f
+	} else if len(os.Args) == 3 && os.Args[1] == "-e" {
+		// Execute program provided as argument:
+		input = strings.NewReader(os.Args[2])
 	}
 
 	m := thorf.NewMachine(os.Stdout)
