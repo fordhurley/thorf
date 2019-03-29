@@ -49,7 +49,10 @@ func BenchmarkMachine(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for _, tg := range testGroups {
 			for _, tc := range tg.tests {
-				runTest(tc.input)
+				_, err := runTest(tc.input)
+				if !tc.err && err != nil {
+					b.Fatal(err)
+				}
 			}
 		}
 	}
